@@ -8,18 +8,24 @@ from backend.db import init_db, get_db, DBColumn, DBCard, SessionLocal
 from backend.ai_agent import fallback_rule_agent
 
 def verify():
+    # Call database initialization from backend/db.py to create database tables (columns, cards, chat_messages) if they don't exist
     print("Initializing Database...")
     init_db()
     print("Database Initialized successfully!")
     
+    # Open a fresh database session to perform operations on the SQLite database
     print("Opening database session...")
     db = SessionLocal()
     try:
         # Create a test column
         print("Testing column insertion...")
+        # Instantiate a new DBColumn with order 99 to prevent overlapping with seeded ones
         test_col = DBColumn(name="Test Column Verification", order=99)
+        # Stage the new column in the session
         db.add(test_col)
+        # Commit the transaction to save it permanently
         db.commit()
+        # Refresh the instance to fetch its newly generated auto-incremented database fields (e.g. ID)
         db.refresh(test_col)
         print(f"Column created with ID: {test_col.id}")
 
